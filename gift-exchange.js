@@ -13,7 +13,7 @@ Email & Password -> receive notifications, view gift exchange partner
 Limit number of participants
 */
 
-// Part 1: SIMPLE gift exchange, technically a valid solution, assumes no duplicate names in list of friends
+// V1: SIMPLE gift exchange, technically a valid solution, assumes no duplicate names in list of friends
 function giftExchangeSimple(friends) {
   if (friends.length < 3) {
     console.log("Not enough friends");
@@ -31,26 +31,21 @@ function giftExchangeSimple(friends) {
 
 
 /*
-Part 2: Gift exchange intended to work with a proper sign up flow and backend
+V2: Gift exchange intended to work with a proper sign up flow and backend
 - Duplicate names prevented at signup
-- Randomize list of names
+- Randomize list of names in backend
 */
 
-// frontend
-function initiateGiftExchange(participants) {
+// FRONTEND
+function initiateGiftExchange() {
   let params = {
     giftExchangeId: id
   }
 
   utils.get("https://gift-exchange.nylas.com/participants", params) // GET function to handle fetch with appropriate headers
     .then((res) => {
-        if (res.status) {
-          setParticipants({ participants: res.data.participants });
-        }
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+      // set participants
+    }).catch( /* handle error */ );
 
   const groupSize = participants.length - 1;
   for (let i = 0; i <= groupSize; i++) {
@@ -61,8 +56,7 @@ function initiateGiftExchange(participants) {
   return
 }
 
-
-// backend
+// BACKEND
 var app = express();
 app.get('/participants', (req, res) => {
   // check for request parameters
@@ -115,9 +109,9 @@ function randomize(participants) { // should have additional endpoint to save yo
 }
 
 /*
-Part 2 Sign Up requires:
+V2 Sign Up requires:
 - Email to handle gift exchange notifications, updates, initial email about who you are gifting to
-- "nickname" to ensure no duplicates if multiple participants have the same name
+- "nickname" check to ensure no duplicates if multiple participants have the same name
 */
 
 // triggers on form submission
@@ -125,7 +119,7 @@ function handleSignUp(event) {
   event.preventDefault();
 
   if (submitEnabled && validateInput()) {
-    // validateInput checks for alphanumeric, proper email format
+    // validateInput checks for alphanumeric nickname (no whitespaces or underscores), valid password, valid email format
     // handle input sanitization in backend
     let params = {
       giftExchangeId: id,
