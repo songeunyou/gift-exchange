@@ -98,8 +98,20 @@ function getParticipantsHandler(id) {
   return [participants, null];
 }
 
-function randomize(participants) {
-  return participants;
+function randomize(participants) { // should have additional endpoint to save your list if you are happy with the randomization
+  let index = participants.length - 1;
+
+  while (index >= 0) {
+    let randomIndex = Math.floor(Math.random() * index);
+
+    let swapValue = participants[randomIndex];
+    participants[randomIndex] = participants[index]
+    participants[index] = swapValue;
+
+    index--;
+  }
+
+  return [participants, null];
 }
 
 /*
