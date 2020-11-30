@@ -101,3 +101,46 @@ function getParticipantsHandler(id) {
 function randomize(participants) {
   return participants;
 }
+
+/*
+Part 2 Sign Up requires:
+- Email to handle gift exchange notifications, updates, initial email about who you are gifting to
+- "nickname" to ensure no duplicates if multiple participants have the same name
+*/
+
+// triggers on form submission
+function handleSignUp(event) {
+  event.preventDefault();
+
+  if (submitEnabled && validateInput()) {
+    // validateInput checks for alphanumeric, proper email format
+    // handle input sanitization in backend
+    let params = {
+      giftExchangeId: id,
+      nickname: nickname.toLowerCase(),
+      email: email.toLowerCase(),
+      pwd: password
+    };
+
+    utils.post("https://gift-exchange.nylas.com/signup", params) // POST function to handle fetch with appropriate headers
+      .then(res => {
+        if (res.status) {
+          setSubmitSuccess(true);
+
+          if (res.isRegistered) {
+            setEmailErrors("This email is already registered.");
+          }
+
+          else if (!res.isRegistered && res.nicknameExists) {
+            setNicknameErrors("This nickname is taken! Choose a different one.");
+          }
+        } else {
+            throw "Something went wrong."
+        }
+      }).catch(err => {
+        console.log(err);
+        setSubmitEnabled(true);
+        setErrors("Something went wrong. Please try again later.");
+      });
+  }
+}
